@@ -1,1 +1,1 @@
-# EEG-Mentalizing
+# Mentalizing
