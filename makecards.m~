@@ -13,6 +13,7 @@ end
 
 [screenXpixels, screenYpixels] = Screen('WindowSize', screens(1));
  
+
 if players < 3 || players >6
     print('invalid number of players, please enter between 3-6')
     exit
@@ -46,8 +47,10 @@ end
 %Setting up the configurations for the cards. 
 if players == 3
     dstRects = cat(2, dstRects(:, 1:2), dstRects(:, 5:6), dstRects(:, 9:10));
+>>>>>>> Stashed changes
 elseif players == 4
     dstRects = dstRects(:, 1:8);
 elseif players == 5
     dstRects = cat(2, dstRects(:, 1:2), dstRects(:, 9:12), dstRects(:, 3:6));
+end
 end
