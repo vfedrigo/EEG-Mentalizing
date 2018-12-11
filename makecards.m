@@ -47,7 +47,7 @@ end
 if players == 3
     dstRects = cat(2, dstRects(:, 1:2), dstRects(:, 5:6), dstRects(:, 9:10));
 elseif players == 4
-    dstRects = dstRects(:, 1:8);
+    dstRects = cat(2, dstRects(:, 1:2), dstRects(:, 5:8), dstRects(:, 11:12));
 elseif players == 5
-    dstRects = cat(2, dstRects(:, 1:2), dstRects(:, 9:12), dstRects(:, 3:6));
+    dstRects = dstRects(:, 1:10);
 end
