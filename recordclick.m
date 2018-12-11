@@ -26,5 +26,7 @@ else disp('Click out of range. Please make a valid selection')
     %make this in a popup
 end
 
-%Show some sort of dialogue to confirm the click
+%Show some sort of dialogue to confirm the click 
+%This is under construction
+
 end
