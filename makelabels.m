@@ -1,7 +1,7 @@
-function labels = makelabels(players)
+function labels = makelabels(players,window)
 
-global windo
-[screenXpixels, screenYpixels] = Screen('WindowSize', windo);
+windo = window;
+[screenXpixels, screenYpixels] = Screen('WindowSize', window);
 
 
 Screen('TextSize', windo, 30);

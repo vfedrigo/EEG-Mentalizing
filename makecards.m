@@ -1,17 +1,9 @@
-function dstRects = makecards(players,perObjectOnCards,is_dual) %want to have it spit out the dstrect matrix
+function dstRects = makecards(players,perObjectOnCards,window) %want to have it spit out the dstrect matrix
 cardnumber = players*perObjectOnCards;
 
 %%extend screen to projector, needs to move on directory later as well.
-if length(Screen('Screens', 1)) > 1
-    screens = ([double(is_dual):-1:0] + is_dual*IsWin());
-    if Screen('DisplaySize',screens(1)) <Screen('DisplaySize',screens(2))
-        screens = fliplr(screens);
-    end
-else 
-   screens = 0; 
-end
 
-[screenXpixels, screenYpixels] = Screen('WindowSize', screens(1));
+[screenXpixels, screenYpixels] = Screen('WindowSize', window);
  
 if players < 3 || players >6
     print('invalid number of players, please enter between 3-6')
