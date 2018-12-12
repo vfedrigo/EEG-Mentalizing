@@ -24,7 +24,6 @@ try
     ResponseVector = [];
     
     %Open a window
-    global windo
     [windo, ~] = PsychImaging('OpenWindow', screenNumber, white);
     
     % Get the size of the on screen window
@@ -38,10 +37,10 @@ try
     %cards
     
     %Below assignments are temporary for debugging
-    perObjectOnCards = 2
-    is_dual = 0
+    perObjectOnCards = 2;
+ 
     
-    dstRects = makecards(players, perObjectOnCards, is_dual);
+    dstRects = makecards(players, perObjectOnCards, windo);
     
     %draw the cards to the dstRects
     penWidthPixels = 6;
