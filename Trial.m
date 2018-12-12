@@ -24,13 +24,13 @@ try
     ResponseVector = [];
     
     %Open a window
-    [windo, ~] = PsychImaging('OpenWindow', screenNumber, white);
+    [window, ~] = Screen('OpenWindow', screenNumber);
     
     % Get the size of the on screen window
     %[screenXpixels, screenYpixels] = Screen('WindowSize', windo);
     
     % Set up alpha-blending for smooth (anti-aliased) lines
-    Screen('BlendFunction', windo, 'GL_SRC_ALPHA', ...
+    Screen('BlendFunction', window, 'GL_SRC_ALPHA', ...
         'GL_ONE_MINUS_SRC_ALPHA');
     
     %Call the makecards function to set up the correct number/config of
@@ -40,11 +40,11 @@ try
     perObjectOnCards = 2;
  
     
-    dstRects = makecards(players, perObjectOnCards, windo);
+    dstRects = getCardPositions(players, perObjectOnCards, window);
     
     %draw the cards to the dstRects
     penWidthPixels = 6;
-    Screen('FrameRect', windo, [0 0 0], dstRects, penWidthPixels)
+    Screen('FrameRect', window, [0 0 0], dstRects, penWidthPixels)
     
     %make labels
     makelabels(players)
@@ -57,7 +57,7 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     % Flip to the screen
-    Screen('Flip', windo);
+    Screen('Flip', window);
     
     %Get the click
     %cardChoice = recordclick();
