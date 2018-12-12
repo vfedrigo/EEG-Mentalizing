@@ -1,14 +1,13 @@
-function [cardChoice] = recordclick(players, cardsize)
+function [cardChoice] = recordclick(players, cardsize,windo)
 %eventually figure out what the input should be--trial number?
 
-global windo
 [~, clickX, clickY] = GetClicks;
 [screenXpixels, screenYpixels] = Screen('WindowSize', windo);
 
-cardsizeX = cardsize(:,1)
-cardsizeY = cardszie(:,2)
+cardsizeX = cardsize(:,1);
+cardsizeY = cardsize(:,2);
 
-
+%%change the percents to a variable so it can be modified
 XconditionLeft = ((clickX < (screenXpixels * 0.10 + 0.5*cardsizeX)) && ...
     (clickX > (screenXpixels * 0.10 - 0.5*cardsizeX)));
 YconditionLeft = ((clickY < (screenYpixels * 0.2 + 0.5*cardsizeY)) && ...
@@ -20,9 +19,9 @@ YconditionRight = ((clickY < (screenYpixels * 0.2 + 0.5*cardsizeY)) && ...
     (clickX > (screenXpixels * 0.2 - 0.5*cardsizeY)));
 
 if  XconditionLeft + YconditionLeft == 2
-    cardChoice = 'left';
+    cardChoice = 1; %1 is left
 elseif XconditionRight + YconditionRight == 2
-    cardChoice = 'right';
+    cardChoice = 0;
     
 else disp('Click out of range. Please make a valid selection')
     cardChoice = 'invalid';

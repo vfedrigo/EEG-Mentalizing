@@ -1,37 +1,22 @@
-function labels = makelabels(players)
-
-global windo
-[screenXpixels, screenYpixels] = Screen('WindowSize', windo);
+function [labels, colors, positions] ...
+    = makelabels(players)
 
 
-Screen('TextSize', windo, 30);
-DrawFormattedText(windo, 'Your Cards', screenXpixels * 0.11,...
-    screenYpixels * 0.37, [1 0 0]);
-Screen('TextSize', windo, 30);
-DrawFormattedText(windo, 'Green Player', screenXpixels * 0.78,...
-    screenYpixels * 0.37, [0 1 0]);
+%%Order of all the following is the same, so the nth term in the labels
+%%array corresponds to colors{n}, etc. Sizes are 30 for text display
 
-if players > 3
-    Screen('TextSize', windo, 30);
-    DrawFormattedText(windo, 'Blue Player', screenXpixels * 0.11,...
-        screenYpixels * 0.97, [0 0 1]);
-end
+labels = {'Your Cards', 'Grey Player', 'Green Player'; 'Blue Player', ...
+    'Pink Player', 'Teal Player'};
 
-if players == 4 || players == 6
-    Screen('TextSize', windo, 30);
-    DrawFormattedText(windo, 'Pink Player', screenXpixels * 0.77,...
-        screenYpixels * 0.97, [1 0 1]);
-end
+colors = {[1 0 0], [0 0 0], [0 1 0], [0 0 1], [1 0 1], [0 1 1]};
 
-if players == 5 || players == 6 || players == 3
-    Screen('TextSize', windo, 30);
-    DrawFormattedText(windo, 'Teal Player', screenXpixels * 0.42,...
-        screenYpixels * 0.97, [0 1 1]);
-end
+positions = {[0.11, 0.37], [0.78, 0.37], [0.11, 0.97], ...
+    [0.77, 0.97], [0.42, 0.97], [0.42, 0.37]};
 
-if players ~= 4 && players ~= 3
-    Screen('TextSize', windo, 30);
-    DrawFormattedText(windo, 'Grey Player', screenXpixels * 0.42,...
-        screenYpixels * 0.37, [0 0 0]);
-end
+loopVector = [1;3;4;6;2;5];
+
+%%make a solid correspondence between label position and card position
+%%can label be put into cards so it's not a separate script
+%%change so index is 6 (1-6)
+%%find way to correlate text and card positions
 end
