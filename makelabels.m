@@ -1,22 +1,37 @@
-function [labels, colors, positions] ...
-    = makelabels(players)
+function [labelStruct] ...
+    = makelabels(centerPositions, sectionHeight, players)
 
-
-%%Order of all the following is the same, so the nth term in the labels
-%%array corresponds to colors{n}, etc. Sizes are 30 for text display
+%currently accomodates up to 6 players, but can be expanded by addding new
+%color/player names and new color RGB codes. the positions should define
+%themselves without any extra work.
 
 labels = {'Your Cards', 'Grey Player', 'Green Player'; 'Blue Player', ...
     'Pink Player', 'Teal Player'};
-
 colors = {[1 0 0], [0 0 0], [0 1 0], [0 0 1], [1 0 1], [0 1 1]};
 
-positions = {[0.11, 0.37], [0.78, 0.37], [0.11, 0.97], ...
-    [0.77, 0.97], [0.42, 0.97], [0.42, 0.37]};
 
-loopVector = [1;3;4;6;2;5];
+%Taken from the Contents script as a way to loop through struct
+indexPlayers = compose('p%d', 1:players); %struct is labelStruct.p(#)
 
-%%make a solid correspondence between label position and card position
-%%can label be put into cards so it's not a separate script
-%%change so index is 6 (1-6)
-%%find way to correlate text and card positions
+labelStruct = struct(); %can be initialized in some way? is there a zeros
+%for structures?
+
+%unpacking the centerpositions
+xPositions = zeros(1, players);
+yPositions = zeros(1, players);
+for pos = 1:players
+    xPositions(pos) = centerPositions(1, pos);
+    yPositions(pos) = centerPositions(2, pos) + (0.4 * sectionHeight);
 end
+
+%filling the label struct
+for index = 1:players
+    tempIndex = char(indexPlayers(index));
+    labelStruct.(tempIndex) = {labels{index}, colors{index}, ... 
+        xPositions, yPositions};
+end
+
+%%This structre is passed to the drawContents function.
+
+end
+
