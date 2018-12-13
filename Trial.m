@@ -25,6 +25,7 @@ try
     
     %Open a window
     [window, ~] = Screen('OpenWindow', screenNumber);
+    [windowWidth, windowHeight] = Screen('WindowSize', window);
     
     % Get the size of the on screen window
     %[screenXpixels, screenYpixels] = Screen('WindowSize', windo);
@@ -37,21 +38,27 @@ try
     %cards
     
     %Below assignments are temporary for debugging
-    perObjectOnCards = 2;
- 
+    players = 7;
+    maxPlayersPerRow = 3;
+    numCardsPerPlayer = 2;
+    sectionMarginRelative = 0.1;
+    cardGapRelative = 0.03;
+    cardAspectRatio = 1.5;
+    cardBorderWidth = 6;
     
-    dstRects = getCardPositions(players, perObjectOnCards, window);
     
-    %draw the cards to the dstRects
-    penWidthPixels = 6;
-    Screen('FrameRect', window, [0 0 0], dstRects, penWidthPixels)
+    [sectionCenters, sectionWidth, sectionHeight] = getSectionPositions(players, maxPlayersPerRow, windowWidth, windowHeight);
+    [cardWidth, cardHeight, cardXPositions] = getCardParameters(numCardsPerPlayer, cardAspectRatio, cardGapRelative, ...
+        sectionMarginRelative, sectionWidth, sectionHeight);
+    
+    renderGameTable(window, sectionCenters, cardWidth, cardHeight, cardXPositions, cardBorderWidth);
     
     %make labels
-    makelabels(players)
+    %makelabels(players)
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %This calls the generate images, which will eventually draw the 
-    %random shapes to the cards. For now, it partitions each card 
+    %This calls the generate images, which will eventually draw the
+    %random shapes to the cards. For now, it partitions each card
     %into halves that can be used as dstRect for drawing an image to.
     %generateimages(players)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,10 +69,10 @@ try
     %Get the click
     %cardChoice = recordclick();
     
-% %This way at the end there'll be a vector with all the choices, can
-% %compare to the different playing strategies
-% ResponseVector = cat(2, ResponseVector, cardChoice);
-% disp(ResponseVector)
+    % %This way at the end there'll be a vector with all the choices, can
+    % %compare to the different playing strategies
+    % ResponseVector = cat(2, ResponseVector, cardChoice);
+    % disp(ResponseVector)
     
     % Wait for a keyboard button press to exit
     KbStrokeWait;

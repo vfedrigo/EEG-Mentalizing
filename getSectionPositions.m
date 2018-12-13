@@ -1,6 +1,4 @@
-function [centerPositions, minSectionWidth, sectionHeight] = getCardPositions(players, maxPlayerNumPerRow, window)
-
-[width, height] = Screen('WindowSize', window);
+function [centerPositions, minSectionWidth, sectionHeight] = getSectionPositions(players, maxPlayerNumPerRow, width, height)
 
 rowNum = ceil(players / maxPlayerNumPerRow);
 sectionHeight = height / rowNum;
