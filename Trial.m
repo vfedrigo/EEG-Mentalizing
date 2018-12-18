@@ -1,4 +1,4 @@
-function [dstRect, subdstRect] = Trial(players)
+function [] = Trial(players)
 %clear workspace and screen
 sca;
 close all;
@@ -13,19 +13,21 @@ PsychDefaultSetup(2);
 screens = Screen('Screens');
 screenNumber = max(screens); %go to external if needed
 
+%define white and black
+white = WhiteIndex(screenNumber);
+
+%Eventually initialize this when we know how many trials/the trial
+%structure, will collect data from subject responses
+ResponseVector = [];
+
+%Open a window
+global window
+[window, ~] = Screen('OpenWindow', screenNumber);
+[windowWidth, windowHeight] = Screen('WindowSize', window);
 
 try
     
-    %define white and black
-    white = WhiteIndex(screenNumber);
     
-    %Eventually initialize this when we know how many trials/the trial
-    %structure, will collect data from subject responses
-    ResponseVector = [];
-    
-    %Open a window
-    [window, ~] = Screen('OpenWindow', screenNumber);
-    [windowWidth, windowHeight] = Screen('WindowSize', window);
     
     % Get the size of the on screen window
     %[screenXpixels, screenYpixels] = Screen('WindowSize', windo);
@@ -45,16 +47,20 @@ try
     cardGapRelative = 0.03;
     cardAspectRatio = 1.5;
     cardBorderWidth = 6;
+    %ADDED: which player is the participant assigned
+    whichPlayer = 1;
     
     
     [sectionCenters, sectionWidth, sectionHeight] = getSectionPositions(players, maxPlayersPerRow, windowWidth, windowHeight);
+    
     [cardWidth, cardHeight, cardXPositions] = getCardParameters(numCardsPerPlayer, cardAspectRatio, cardGapRelative, ...
         sectionMarginRelative, sectionWidth, sectionHeight);
-    
+     
     renderGameTable(window, sectionCenters, cardWidth, cardHeight, cardXPositions, cardBorderWidth);
     
-    %make labels
-    %makelabels(players)
+    generateLabels(sectionCenters, sectionHeight, players, cardHeight, ...
+        cardBorderWidth, sectionWidth, cardWidth);
+    
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %This calls the generate images, which will eventually draw the
@@ -67,12 +73,12 @@ try
     Screen('Flip', window);
     
     %Get the click
-    %cardChoice = recordclick();
+    cardChoice = recordclick(whichPlayer, sectionCenters, ...
+    cardXPositions, cardHeight, cardWidth);
     
     % %This way at the end there'll be a vector with all the choices, can
     % %compare to the different playing strategies
     % ResponseVector = cat(2, ResponseVector, cardChoice);
-    % disp(ResponseVector)
     
     % Wait for a keyboard button press to exit
     KbStrokeWait;
@@ -83,4 +89,3 @@ catch
 end
 
 end
-
