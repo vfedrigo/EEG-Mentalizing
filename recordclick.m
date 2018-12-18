@@ -27,14 +27,14 @@ YconditionLeft = ((clickY < (playerCardYpos(1))) && ...
     (clickX > (playerCardYpos(2))));
 
 XconditionRight = ((clickX < (playerRightCard(2))) && ...
-    (clickX >(playerRightCard(1))))
+    (clickX >(playerRightCard(1))));
 YconditionRight = ((clickY < (playerCardYpos(1))) && ...
     (clickX > (playerCardYpos(2))));
 
 if  XconditionLeft + YconditionLeft == 2
-    cardChoice = 1; %1 is left
+    cardChoice = 1 %1 is left
 elseif XconditionRight + YconditionRight == 2
-    cardChoice = 0;
+    cardChoice = 0
     
 else disp('You did not click on your own cards. Please try again')
     cardChoice = -99;
