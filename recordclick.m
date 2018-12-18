@@ -1,30 +1,43 @@
-function [cardChoice] = recordclick(players, cardsize,windo)
-%eventually figure out what the input should be--trial number?
+function [cardChoice] = recordclick(whichPlayer, sectionCenters, ...
+    cardXPositions, cardHeight, cardWidth)
 
 [~, clickX, clickY] = GetClicks;
-[screenXpixels, screenYpixels] = Screen('WindowSize', windo);
 
-cardsizeX = cardsize(:,1);
-cardsizeY = cardsize(:,2);
+%Define which cards we're looking at (in case we later randomize the
+%position of the participant) 
+playerCenter = sectionCenters(:, whichPlayer) %center of the section
 
-%%change the percents to a variable so it can be modified
-XconditionLeft = ((clickX < (screenXpixels * 0.10 + 0.5*cardsizeX)) && ...
-    (clickX > (screenXpixels * 0.10 - 0.5*cardsizeX)));
-YconditionLeft = ((clickY < (screenYpixels * 0.2 + 0.5*cardsizeY)) && ...
-    (clickX > (screenXpixels * 0.2 - 0.5*cardsizeY)));
+%Define the player's card edges
+playerCardXpos = [playerCenter(1) + cardXPositions(1), ...
+    playerCenter(1) + cardXPositions(2)] %left card center, right card center
 
-XconditionRight = ((clickX < (screenXpixels * 0.24 + 0.5*cardsizeX)) && ...
-    (clickX >(screenXpixels * 0.24 - 0.5*cardsizeX)));
-YconditionRight = ((clickY < (screenYpixels * 0.2 + 0.5*cardsizeY)) && ...
-    (clickX > (screenXpixels * 0.2 - 0.5*cardsizeY)));
+playerLeftCard = [playerCardXpos(1) - 0.5*cardWidth,...
+    playerCardXpos(1) + 0.5*cardWidth]
+
+playerRightCard = [playerCardXpos(2) - 0.5*cardWidth,...
+    playerCardXpos(2) + 0.5*cardWidth]
+
+playerCardYpos = [sectionCenters(2, whichPlayer) + 0.5*cardHeight, ...
+    sectionCenters(2, whichPlayer) - 0.5*cardHeight] %top half, bottom half
+
+%Defining the clicks as being either in or out of range
+XconditionLeft = ((clickX < (playerLeftCard(2))) && ...
+    (clickX > (playerLeftCard(1))))
+YconditionLeft = ((clickY < (playerCardYpos(1))) && ...
+    (clickX > (playerCardYpos(2))))
+
+XconditionRight = ((clickX < (playerRightCard(2))) && ...
+    (clickX >(playerRightCard(1))))
+YconditionRight = ((clickY < (playerCardYpos(1))) && ...
+    (clickX > (playerCardYpos(2))))
 
 if  XconditionLeft + YconditionLeft == 2
     cardChoice = 1; %1 is left
 elseif XconditionRight + YconditionRight == 2
     cardChoice = 0;
     
-else disp('Click out of range. Please make a valid selection')
-    cardChoice = 'invalid';
+else disp('You did not click on your own cards. Please try again')
+    cardChoice = -99;
     %make this in a popup
 end
 
