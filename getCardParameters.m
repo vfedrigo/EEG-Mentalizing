@@ -1,4 +1,4 @@
-function [cardWidth, cardHeight, cardXPositions] = getCardParameters(numCardsPerPlayer, cardAspectRatio, cardGapRelative, ...
+function [cardWidth, cardHeight, cardXPositions, labelYPosition, labelWidth, labelHeight] = getCardParameters(numCardsPerPlayer, cardAspectRatio, cardGapRelative, ...
     sectionMarginRelative, sectionWidth, sectionHeight)
 
 sectionMargin = floor(sectionMarginRelative * min(sectionWidth, sectionHeight));
@@ -17,5 +17,7 @@ end
 
 totalCardWidth = cardWidth * numCardsPerPlayer + cardGap * (numCardsPerPlayer - 1);
 cardXPositions = [cardWidth / 2 : cardWidth + cardGap : totalCardWidth - cardWidth / 2] - (totalCardWidth / 2);
-
+labelYPosition = cardHeight / 2 + sectionMargin / 2;
+labelWidth = sectionWidth;
+labelHeight = sectionMargin;
 

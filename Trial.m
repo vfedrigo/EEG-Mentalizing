@@ -38,21 +38,27 @@ try
     %cards
     
     %Below assignments are temporary for debugging
-    players = 7;
+    players = 8   ;
     maxPlayersPerRow = 3;
     numCardsPerPlayer = 2;
     sectionMarginRelative = 0.1;
     cardGapRelative = 0.03;
     cardAspectRatio = 1.5;
     cardBorderWidth = 6;
-    
+    objectNum = 3;
+    objectAspectRatio = 1.0;
+    cardConfig = randi(4, players, numCardsPerPlayer, objectNum);
+    imgDir = 'imgs/';
     
     [sectionCenters, sectionWidth, sectionHeight] = getSectionPositions(players, maxPlayersPerRow, windowWidth, windowHeight);
-    [cardWidth, cardHeight, cardXPositions] = getCardParameters(numCardsPerPlayer, cardAspectRatio, cardGapRelative, ...
+    [cardWidth, cardHeight, cardXPositions, labelYPosition, labelWidth, labelHeight] = getCardParameters(numCardsPerPlayer, cardAspectRatio, cardGapRelative, ...
         sectionMarginRelative, sectionWidth, sectionHeight);
+    [objectWidth, objectHeight, objectYPositions] = getObjectParameters(cardWidth, cardHeight, cardBorderWidth, ...
+        objectNum, objectAspectRatio);
     
-    renderGameTable(window, sectionCenters, cardWidth, cardHeight, cardXPositions, cardBorderWidth);
-    
+    renderGameTable(window, sectionCenters, cardWidth, cardHeight, cardXPositions, cardBorderWidth, ...
+        objectWidth, objectHeight, objectYPositions, cardConfig, imgDir, labelYPosition, labelWidth, labelHeight);
+     
     %make labels
     %makelabels(players)
     
@@ -62,23 +68,22 @@ try
     %into halves that can be used as dstRect for drawing an image to.
     %generateimages(players)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    % Flip to the screen
-    Screen('Flip', window);
+
     
     %Get the click
-    %cardChoice = recordclick();
+    cardChoice = -1;
+    while cardChoice <= 0
+        cardChoice = recordclick(window, sectionCenters(:, 1), cardXPositions, cardHeight, cardWidth);
+    end
     
     % %This way at the end there'll be a vector with all the choices, can
     % %compare to the different playing strategies
     % ResponseVector = cat(2, ResponseVector, cardChoice);
     % disp(ResponseVector)
-    
-    % Wait for a keyboard button press to exit
-    KbStrokeWait;
+   
     sca
     
-catch
+catch e
     sca
 end
 
