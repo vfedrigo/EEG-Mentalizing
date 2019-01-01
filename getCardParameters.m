@@ -5,7 +5,7 @@ sectionMargin = floor(sectionMarginRelative * min(sectionWidth, sectionHeight));
 cardGap = floor(cardGapRelative * min(sectionWidth, sectionHeight));
 
 maxCardHeight = sectionHeight - 2 * sectionMargin;
-maxCardWidth = floor((sectionHeight - 2 * sectionMargin + cardGap) / numCardsPerPlayer - cardGap);
+maxCardWidth = floor((sectionWidth - 2 * sectionMargin + cardGap) / numCardsPerPlayer - cardGap);
 
 if maxCardHeight > maxCardWidth * cardAspectRatio
     cardHeight = floor(maxCardWidth * cardAspectRatio);
