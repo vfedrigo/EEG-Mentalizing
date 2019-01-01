@@ -1,7 +1,13 @@
-function renderGameTable(window, sectionCenters, cardWidth, cardHeight, cardXPositions, cardBorderWidth, ...
-    objectWidth, objectHeight, objectYPositions, cardConfig, imgDir, labelYPosition, labelWidth, labelHeight)
+function shouldContinue = renderGameTable(window, sectionCenters, cardWidth, cardHeight, cardXPositions, cardBorderWidth, ...
+    objectWidth, objectHeight, objectYPositions, cardConfig, imgDir, labelYPosition, labelWidth, labelHeight, ...
+    cardChoice)
+if cardChoice > 0
+    msg = 'Please press Enter to Continue or Esc to Exit';
+else
+    msg = 'Please click within the RED RECTANGLE BOUNDARIES and select one of your cards';
+end
 
-DrawFormattedText(window, 'Please click within the RED RECTANGLE BOUNDARIES and select one of your cards', 'center', ...
+DrawFormattedText(window, msg, 'center', ...
     round(min(sectionCenters(2,:)) / 2 - cardHeight / 4), [255, 0, 0]);
 
 cardSize = [0, 0, cardWidth, cardHeight];
@@ -13,10 +19,10 @@ for sectionId = 1 : size(sectionCenters, 2)
     sectionCenterY = sectionCenters(2, sectionId);
     if sectionId == 1
         labelText = 'Your Cards';
-        textColor = 0;
+        textColor = [255, 0, 0];
     else
         labelText = sprintf('Player %d', sectionId);
-        textColor = randi(255,1,3);
+        textColor = 0;
     end
     DrawFormattedText(window, labelText, 'center', 'center', ...
             textColor, [], [], [], [], [], ...
@@ -27,7 +33,11 @@ for sectionId = 1 : size(sectionCenters, 2)
         cardXPosition = cardXPositions(cardId);
         cardRect = CenterRectOnPointd(cardSize, cardXPosition + sectionCenterX, sectionCenterY);
         if sectionId == 1
-           cardBorderColor = [255, 0, 0];
+            if cardChoice == cardId
+                cardBorderColor = [0, 255, 255];
+            else
+                cardBorderColor = [255, 0, 0];
+            end
         else
            cardBorderColor = 0;
         end
@@ -49,3 +59,12 @@ end
 
 % Flip to the screen
 Screen('Flip', window);
+if cardChoice > 0
+   input = GetChar;
+   while input ~= 10 && input ~= 27
+       input = GetChar; 
+   end
+   shouldContinue = (input == 10);
+else 
+   shouldContinue = true; 
+end
