@@ -3,6 +3,9 @@ function Mentalizing
 %% Constants
 userDataPath = 'data/';
 imgDir = 'imgs/';
+cardConfigDir = 'cardConfigs';
+reGenerate = false;
+cardPoolSize = 20;
 
 %% Toolbox setup
 %clear workspace and screen
@@ -33,7 +36,7 @@ try
     %% Trial 1
     gameDataFilename = 'trial_1.mat';
     gameConfig.players = 3;
-    gameConfig.gameNum = 2;
+    gameConfig.gameConfigNum = 2;
     gameConfig.maxPlayersPerRow = 3;
     gameConfig.numCardsPerPlayer = 2;
     gameConfig.sectionMarginRelative = 0.1;
@@ -42,10 +45,13 @@ try
     gameConfig.cardBorderWidth = 6;
     gameConfig.objectNum = 3;
     gameConfig.objectAspectRatio = 1.0;
-    gameConfig.cardConfigs = zeros(gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum, gameConfig.gameNum);
-    for i = 1 : gameConfig.gameNum
-       gameConfig.cardConfigs(:, :, :, i) = randi(4, gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum);
-    end
+    gameConfig.maxObjectCount = 7;
+    %gameConfig.gameNum = gameConfig.gameConfigNum * gameConfig.players;
+    %gameConfig.cardConfigs = zeros(gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum, gameConfig.gameNum);
+    %for i = 1 : gameConfig.gameNum
+    %   gameConfig.cardConfigs(:, :, :, i) = randi(4, gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum);
+    %end
+    gameConfig = getCardConfigs(gameConfig, cardConfigDir, cardPoolSize, reGenerate);
     [userId, shouldExit] = Trial(userDataPath, gameDataFilename, imgDir, window, windowWidth, ...
         windowHeight, gameConfig, []);
     if shouldExit
@@ -56,11 +62,12 @@ try
     %% Trial 2
     gameDataFilename = 'trial_2.mat';
     gameConfig.players = 5;
-    gameConfig.gameNum = 2;
-    gameConfig.cardConfigs = zeros(gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum, gameConfig.gameNum);
-    for i = 1 : gameConfig.gameNum
-       gameConfig.cardConfigs(:, :, :, i) = randi(4, gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum);
-    end
+    gameConfig.gameConfigNum = 2;
+    %gameConfig.cardConfigs = zeros(gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum, gameConfig.gameNum);
+    %for i = 1 : gameConfig.gameNum
+    %   gameConfig.cardConfigs(:, :, :, i) = randi(4, gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum);
+    %end
+    gameConfig = getCardConfigs(gameConfig, cardConfigDir, cardPoolSize, reGenerate);
     [~, shouldExit] = Trial(userDataPath, gameDataFilename, imgDir, window, windowWidth, ...
         windowHeight, gameConfig, userId);
     if shouldExit
