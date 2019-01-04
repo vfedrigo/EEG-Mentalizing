@@ -3,14 +3,18 @@
 //  cardGameConfigGenerator
 //
 //  Created by Li Xiaomin on 12/29/18.
-//  Copyright © 2018 Li Xiaomin. All rights reserved.
+//  Copyright Â© 2018 Li Xiaomin. All rights reserved.
 //
 
 #include <iostream>
 #include <vector>
+#include <unordered_set>
 #include <stdlib.h>
 
 int solutionId = 0;
+int minUsedItem = 0;
+int itemMaxUsedCount = 0;
+int l3MaxOverlap = 1;
 char filename[80];
 const char* outputDir = ".";
 FILE* fid;
@@ -42,7 +46,7 @@ std::vector<int> getPayoffs(std::vector<std::vector<int>> &state, int offset, in
 }
 
 int getBestOptionCount(std::vector<std::vector<int>> &state, int targetOffset,
-                       int sourceOffset, int cardNum) {
+                       int sourceOffset, int cardNum, int itemNum, bool isStrict) {
     std::vector<std::vector<int>> payoffs(cardNum);
     for(int i = 0; i < cardNum; i++) {
         payoffs[i] = getPayoffs(state, targetOffset, cardNum, state[sourceOffset + i]);
@@ -50,7 +54,7 @@ int getBestOptionCount(std::vector<std::vector<int>> &state, int targetOffset,
     std::vector<int> maxPayoffs(cardNum, 0);
     for (int i = 0; i < cardNum; i++) {
         for(int j = 0; j < cardNum; j++) {
-            if(payoffs[i][j] == cardNum) {
+            if(payoffs[i][j] == itemNum) {
                 return -1;
             }
             if(payoffs[i][j] > maxPayoffs[j]) {
@@ -61,10 +65,13 @@ int getBestOptionCount(std::vector<std::vector<int>> &state, int targetOffset,
     
     int bestOptionNum = 0;
     for(int i = 0; i< cardNum; i++) {
-        bool isBestOption = true;
+        bool isBestOption = !isStrict;
         for(int j = 0; j< cardNum; j++) {
-            if(payoffs[i][j] < maxPayoffs[j]) {
+            if(payoffs[i][j] < maxPayoffs[j] && !isStrict) {
                 isBestOption = false;
+                break;
+            } else if(payoffs[i][j] >= maxPayoffs[j] && isStrict) {
+                isBestOption = true;
                 break;
             }
         }
@@ -73,15 +80,52 @@ int getBestOptionCount(std::vector<std::vector<int>> &state, int targetOffset,
         }
     }
     
-    return bestOptionNum;
+    if (isStrict) {
+        return bestOptionNum == 1 ? 1 : 0;
+    } else {
+        return bestOptionNum;
+    }
 }
 
-bool isEndingPhaseValid(std::vector<std::vector<int>> &state, int offset, int cardNum) {
-    return getBestOptionCount(state, 0, offset, cardNum) == 1;
+int getPlayerItemCount(std::vector<std::vector<int>> &state, int offset, int cardNum, int objectNum) {
+    std::unordered_set<int> usedItems;
+    for (int i = 0; i< cardNum; i++) {
+        for ( int j = 0; j < objectNum; j++) {
+            usedItems.insert(state[offset + i][j]);
+        }
+    }
+    return (int)usedItems.size();
 }
 
-bool isMiddlePhaseValid(std::vector<std::vector<int>> &state, int prevOffset, int nextOffset, int cardNum) {
-    return getBestOptionCount(state, nextOffset, prevOffset, cardNum) == 0;
+int getItemMaxUsedCount(std::vector<std::vector<int>> &state, int size, int maxItemCount) {
+    int maxCount = 0;
+    std::vector<int> usedCount(maxItemCount, 0);
+    for (int i = 0; i < size; i++) {
+        for (int j = 0 ; j < state[i].size(); j++) {
+            usedCount[state[i][j]]++;
+            maxCount = maxCount > usedCount[state[i][j]] ? maxCount : usedCount[state[i][j]];
+        }
+    }
+    return maxCount;
+}
+
+bool isEndingPhaseValid(std::vector<std::vector<int>> &state, int offset, int cardNum, int itemNum) {
+    return getBestOptionCount(state, 0, offset, cardNum, itemNum, true) == 1;
+}
+
+bool isMiddlePhaseValid(std::vector<std::vector<int>> &state, int prevOffset, int nextOffset, int cardNum, int itemNum) {
+    return getBestOptionCount(state, nextOffset, prevOffset, cardNum, itemNum, false) == 0;
+}
+
+bool l3heuristic(std::vector<std::vector<int>> &state, int offset, int maxOverlap, int cardNum) {
+    for(int i = 0; i < cardNum; i++) {
+        for (int j = 0; j < cardNum; j++) {
+            if(getPayoff(state[offset - cardNum * 3 + i], state[offset - cardNum]) > 1) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 int fillInNextCardConfig(std::vector<int> &prevConfig, std::vector<int> &nextConfig,
@@ -120,13 +164,23 @@ void searchForValidGameConfig(int playerNum, int cardNum, int itemNum, int maxIt
     }
     int nextUsedItemNum = usedItemNum;
     if( searchStep % cardNum == 0 ) {
+        if (getItemMaxUsedCount(state, searchStep, maxItemCount) > itemMaxUsedCount) {
+            return;
+        }
         // if we are dealing with a new player
-        if (searchStep >= cardNum * 2 && !isMiddlePhaseValid(state, searchStep - 2 * cardNum, searchStep - cardNum, cardNum)) {
+        if (searchStep >= cardNum && getPlayerItemCount(state, searchStep - cardNum, cardNum, itemNum) <= minUsedItem) {
+            return;
+        }
+        if (searchStep >= cardNum * 2 && !isMiddlePhaseValid(state, searchStep - 2 * cardNum, searchStep - cardNum, cardNum, itemNum)) {
+            return;
+        }
+        // heuristic 3
+        if (searchStep >= cardNum * 3 && !l3heuristic(state, searchStep, l3MaxOverlap, cardNum)) {
             return;
         }
         if(searchStep == playerNum * cardNum) {
             // finished generating all players' card
-            if (isEndingPhaseValid(state, playerNum * cardNum - cardNum, cardNum)) {
+            if (isEndingPhaseValid(state, playerNum * cardNum - cardNum, cardNum, itemNum)) {
                 if ( RAND_MAX * sampleRate < rand() % RAND_MAX) {
                     return;
                 }
@@ -190,15 +244,18 @@ void printValidGameConfig(int playerNum, int cardNum, int itemNum, int maxItemCo
 
 int main(int argc, const char * argv[]) {
     if (argc < 2) {
-        printf("Usage:\n\t[-p]: playerNum (default: 6)\n\t[-c]: cardNum (default: 2)\n\t[-i]: itemNum (default: 2)\n\t[-mi]: maxItemCount (default: 7)\n\t[-mo] maxOutputCount (default: 20)\n\t[-v]: verbose (default: false)\n\t[-s]: sampleRate (default: 0.05)\n\t[-o]: outputDir\n");
+        printf("Usage:\n\t[-p]: playerNum (default: 6)\n\t[-c]: cardNum (default: 2)\n\t[-i]: itemNum (default: 2)\n\t[-mi]: maxItemCount (default: 7)\n\t[-mo] maxOutputCount (default: 20)\n\t[-v]: verbose (default: false)\n\t[-s]: sampleRate (default: 1.0)\n\t[-o]: outputDir\n");
         return 0;
     }
     
     int playerNum = 6;
     int cardNum = 2;
-    int itemNum = 2;
+    int itemNum = 3;
     int maxItemCount = 7;
     int maxOutputCount = 20;
+    int l3MaxOverlapIn = 1;
+    int minUsedItemCount = 0;//cardNum * (itemNum - 1);
+    int itemMaxUsed = playerNum * cardNum;
     float sampleRate = 0.05f;
     bool verbose = false;
     for(int i = 1; i < argc; i+= 2) {
@@ -219,9 +276,18 @@ int main(int argc, const char * argv[]) {
             sampleRate = std::stof(argv[i + 1]);
         } else if (strcmp(argv[i], "-o") == 0) {
             outputDir = argv[i + 1];
+        } else if (strcmp(argv[i], "-mu") == 0) {
+            minUsedItemCount = std::stoi(argv[i + 1]);
+        } else if (strcmp(argv[i], "-mui") == 0) {
+            itemMaxUsed = std::stoi(argv[i + 1]);
+        } else if (strcmp(argv[i], "-mui") == 0) {
+            l3MaxOverlapIn = std::stoi(argv[i + 1]);
         }
     }
-
+    minUsedItem = minUsedItemCount;
+    itemMaxUsedCount = itemMaxUsed;
+    l3MaxOverlap = l3MaxOverlapIn;
+    
     printValidGameConfig(playerNum, cardNum, itemNum, maxItemCount, maxOutputCount, sampleRate, verbose);
     return 0;
 }
