@@ -61,7 +61,7 @@ try
     
     %% Trial 2
     gameDataFilename = 'trial_2.mat';
-    gameConfig.players = 5;
+    gameConfig.players = 4;
     gameConfig.gameConfigNum = 2;
     %gameConfig.cardConfigs = zeros(gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum, gameConfig.gameNum);
     %for i = 1 : gameConfig.gameNum
