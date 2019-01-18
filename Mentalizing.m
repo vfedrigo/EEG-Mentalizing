@@ -36,7 +36,7 @@ try
     %% Trial 1
     gameDataFilename = 'trial_1.mat';
     gameConfig.players = 3;
-    gameConfig.gameConfigNum = 2;
+    gameConfig.gameConfigNum = 4;
     gameConfig.maxPlayersPerRow = 3;
     gameConfig.numCardsPerPlayer = 2;
     gameConfig.sectionMarginRelative = 0.1;
@@ -62,7 +62,7 @@ try
     %% Trial 2
     gameDataFilename = 'trial_2.mat';
     gameConfig.players = 4;
-    gameConfig.gameConfigNum = 2;
+    gameConfig.gameConfigNum = 3;
     %gameConfig.cardConfigs = zeros(gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum, gameConfig.gameNum);
     %for i = 1 : gameConfig.gameNum
     %   gameConfig.cardConfigs(:, :, :, i) = randi(4, gameConfig.players, gameConfig.numCardsPerPlayer, gameConfig.objectNum);
